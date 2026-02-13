@@ -15,6 +15,7 @@ internal class SalaryManager : ISalaryManager
         {
             string name = employee.Split("=")[0];
             string[] range = employee.Split("=")[1].Split(",");
+            ToPay[name] = 0.0;
 
             for (int i = 0; i < range.Length; i++)
             {
@@ -60,15 +61,11 @@ internal class SalaryManager : ISalaryManager
         return [.. content];
     }
 
-    private DateTime Formater(string hours)
-    {
-        return DateTime.Parse(hours);
-    }
+    private DateTime Formater(string hours) => DateTime.Parse(hours);
 
     private void Operations(List<Data> payrange, string name, DateTime start, DateTime end)
     {
-        ToPay[name] = 0.0;
-
+        
         for (int i = 0; i < payrange.Capacity; i++)
         {
             if (start.CompareTo(Formater(payrange[i].EndRange)) > 0)
@@ -76,19 +73,19 @@ internal class SalaryManager : ISalaryManager
                 continue;
             }
             else if (
-                start.CompareTo(Formater(payrange[i].StartRange)) >= 0
+                start.CompareTo(Formater(payrange[i].StartRange)) > -1
                 &&
-                start.CompareTo(Formater(payrange[i].EndRange)) <= 0
+                start.CompareTo(Formater(payrange[i].EndRange)) < 1
                 &&
-                end.CompareTo(Formater(payrange[i].EndRange)) <= 0
+                end.CompareTo(Formater(payrange[i].EndRange)) < 1
                 )
             {
                 ToPay[name] += payrange[i].Payment * end.Subtract(start).Hours;
             }
             else if (
-                    start.CompareTo(Formater(payrange[i].StartRange)) >= 0
+                    start.CompareTo(Formater(payrange[i].StartRange)) > -1
                     &&
-                    start.CompareTo(Formater(payrange[i].EndRange)) <= 0
+                    start.CompareTo(Formater(payrange[i].EndRange)) < 1
                     &&
                     end.CompareTo(Formater(payrange[i].EndRange)) > 0
              )
@@ -98,24 +95,18 @@ internal class SalaryManager : ISalaryManager
                 for (int t = i + 1; t < payrange.Count; t++)
                 {
                     if (
-                        end.CompareTo(Formater(payrange[t].StartRange)) >= 0
+                        end.CompareTo(Formater(payrange[t].StartRange)) > -1
                         &&
-                        end.CompareTo(Formater(payrange[t].EndRange)) <= 0
+                        end.CompareTo(Formater(payrange[t].EndRange)) < 1
                         )
                     {
 
                         ToPay[name] += payrange[t].Payment * end.Subtract(Formater(payrange[t].StartRange)).Hours;
 
                     }
-                    else if (end.CompareTo(Formater(payrange[t].StartRange)) > 0
-                              &&
-                              end.CompareTo(Formater(payrange[t].EndRange)) > 0
-                            )
+                    else if (end.CompareTo(Formater(payrange[t].EndRange)) > 0)
                     {
-
                         ToPay[name] += payrange[t].Payment * Formater(payrange[t].EndRange).Subtract(Formater(payrange[t].StartRange)).Hours;
-
-
                     }
                 }
             }
