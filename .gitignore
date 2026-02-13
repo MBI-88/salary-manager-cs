@@ -5,3 +5,6 @@
 *.cache
 *.props
 *.targets
+
+/bin/*
+/obj/*
