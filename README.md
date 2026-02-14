@@ -1,5 +1,5 @@
 # Salary Manager
-Salary Manager
+Salary Manager C#
 ## Overview
 
 This project is a Salary Manager written in C#. It processes employee data and calculates the total earnings for each employee based on their working hours.
