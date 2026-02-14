@@ -9,19 +9,18 @@ internal class SalaryManager : ISalaryManager
 
     public Dictionary<string, double> ProcessData(List<string> employees)
     {
-        var payments = Rangepayments.NewData();
-
+        
         foreach (string employee in employees)
         {
             string name = employee.Split("=")[0];
             string[] range = employee.Split("=")[1].Split(",");
-            ToPay[name] = 0.0;
+            ToPay[name] = 0;
 
-            for (int i = 0; i < range.Length; i++)
+            foreach (string r in range)
             {
-                string day = range[i][0..2];
-                DateTime StartRange = Formater(range[i].Split("-")[0][2..]);
-                DateTime EndRange = Formater(range[i].Split("-")[1]);
+                string day = r[0..2];
+                DateTime StartRange = Formater(r.Split("-")[0][2..]);
+                DateTime EndRange = Formater(r.Split("-")[1]);
 
                 switch (day)
                 {
@@ -30,11 +29,11 @@ internal class SalaryManager : ISalaryManager
                     case "WE":
                     case "TH":
                     case "FR":
-                        Operations(payments["Week"], name, StartRange, EndRange);
+                        Operations(Rangepayments.NewData()["Week"], name, StartRange, EndRange);
                         break;
                     case "SA":
                     case "SU":
-                        Operations(payments["Weekend"], name, StartRange, EndRange);
+                        Operations(Rangepayments.NewData()["Weekend"], name, StartRange, EndRange);
                         break;
                 }
 
@@ -65,8 +64,7 @@ internal class SalaryManager : ISalaryManager
 
     private void Operations(List<Data> payrange, string name, DateTime start, DateTime end)
     {
-        
-        for (int i = 0; i < payrange.Capacity; i++)
+        for (int i = 0; i < payrange.Count; i++)
         {
             if (start.CompareTo(Formater(payrange[i].EndRange)) > 0)
             {
@@ -80,7 +78,7 @@ internal class SalaryManager : ISalaryManager
                 end.CompareTo(Formater(payrange[i].EndRange)) < 1
                 )
             {
-                ToPay[name] += payrange[i].Payment * end.Subtract(start).Hours;
+                ToPay[name] += payrange[i].Payment * end.Subtract(start).TotalHours;
             }
             else if (
                     start.CompareTo(Formater(payrange[i].StartRange)) > -1
@@ -90,7 +88,7 @@ internal class SalaryManager : ISalaryManager
                     end.CompareTo(Formater(payrange[i].EndRange)) > 0
              )
             {
-                ToPay[name] += payrange[i].Payment * Formater(payrange[i].EndRange).Subtract(start).Hours;
+                ToPay[name] += payrange[i].Payment * Formater(payrange[i].EndRange).Subtract(start).TotalHours;
 
                 for (int t = i + 1; t < payrange.Count; t++)
                 {
@@ -101,12 +99,12 @@ internal class SalaryManager : ISalaryManager
                         )
                     {
 
-                        ToPay[name] += payrange[t].Payment * end.Subtract(Formater(payrange[t].StartRange)).Hours;
+                        ToPay[name] += payrange[t].Payment * end.Subtract(Formater(payrange[t].StartRange)).TotalHours;
 
                     }
                     else if (end.CompareTo(Formater(payrange[t].EndRange)) > 0)
                     {
-                        ToPay[name] += payrange[t].Payment * Formater(payrange[t].EndRange).Subtract(Formater(payrange[t].StartRange)).Hours;
+                        ToPay[name] += payrange[t].Payment * Formater(payrange[t].EndRange).Subtract(Formater(payrange[t].StartRange)).TotalHours;
                     }
                 }
             }
